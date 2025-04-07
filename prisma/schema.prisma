@@ -1,0 +1,29 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  price       Float
+  oldPrice    Float?
+  description String?
+  category    String
+  imageUrl    String
+  createdAt   DateTime @default(now())
+  featured    Boolean  @default(false)
+  trending    Boolean  @default(false)
+  newArrival  Boolean  @default(false)
+  topRated    Boolean  @default(false)
+  available   Int      @default(0)
+  sold        Int      @default(0)
+  dealOfDay   Boolean  @default(false)
+  dealEnds    DateTime?
+}
