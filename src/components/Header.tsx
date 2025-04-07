@@ -1,190 +1,245 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useCart } from '@/context/CartContext'
-import { ShoppingCart, Search, Menu } from 'lucide-react'
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
+import { ShoppingCart, Search, Menu } from "lucide-react";
 
 export default function Header() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const router = useRouter()
-  const { cartItems } = useCart()
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const { cartItems } = useCart();
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`)
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
     }
-  }
+  };
 
-  const toggleMenu = () => setMenuOpen(prev => !prev)
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
+  const navItems = ["Products", "Clothes", "Sports", "Jewellery"];
 
   return (
-    <header style={{ width: '100%', fontFamily: 'sans-serif' }}>
+    <header
+      style={{
+        width: "100%",
+        borderBottom: "1px solid #e5e7eb",
+        fontFamily: "sans-serif",
+      }}
+    >
       {/* Top Banner */}
-      <div style={{
-        backgroundColor: '#FEF3C7',
-        textAlign: 'center',
-        padding: '8px',
-        fontSize: '14px',
-        fontWeight: 500
-      }}>
+      <div
+        style={{
+          backgroundColor: "#f9fafb",
+          padding: "8px 16px",
+          textAlign: "center",
+          fontSize: "14px",
+          fontWeight: 500,
+        }}
+      >
         Free Shipping This Week Order Over - $55
       </div>
 
       {/* Main Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        padding: '16px 24px',
-        borderBottom: '1px solid #e5e7eb',
-        gap: '16px'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          padding: "16px 24px",
+          gap: "12px",
+        }}
+      >
         {/* Logo */}
-        <div style={{ fontSize: '24px', fontWeight: 'bold', flexShrink: 0 }}>
-          <Link href="/">Anon</Link>
-        </div>
+        <Link
+          href="/"
+          style={{
+            textDecoration: "none",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#111827",
+          }}
+        >
+          Anon
+        </Link>
 
-        {/* Search Bar */}
+        {/* Search */}
         <form
           onSubmit={handleSearch}
           style={{
-            display: 'flex',
             flexGrow: 1,
-            maxWidth: '500px',
-            minWidth: '200px',
-            margin: '0 16px',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            overflow: 'hidden'
+            maxWidth: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
           <input
             type="search"
+            placeholder="Enter product name or category..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Enter product name or category..."
             style={{
-              flex: 1,
-              padding: '8px 12px',
-              fontSize: '14px',
-              border: 'none',
-              outline: 'none'
+              flexGrow: 1,
+              padding: "10px 12px",
+              border: "1px solid #d1d5db",
+              borderRadius: "6px",
+              fontSize: "14px",
             }}
           />
-          <button type="submit" style={{
-            backgroundColor: 'black',
-            padding: '8px',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            border: 'none',
-            cursor: 'pointer'
-          }}>
+          <button
+            type="submit"
+            style={{
+              padding: "10px 14px",
+              backgroundColor: "#111827",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <Search size={18} />
           </button>
         </form>
 
-        {/* Cart and Hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-          <Link href="/cart" style={{ position: 'relative' }}>
-            <ShoppingCart size={24} />
+        {/* Cart and Menu */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <Link
+            href="/cart"
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "#111827",
+            }}
+          >
+            <ShoppingCart size={22} />
             {cartItems.length > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-6px',
-                right: '-10px',
-                backgroundColor: '#EF4444',
-                color: 'white',
-                fontSize: '12px',
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
+              <span
+                style={{
+                  position: "absolute",
+                  top: -6,
+                  right: -6,
+                  background: "red",
+                  color: "white",
+                  fontSize: "10px",
+                  borderRadius: "50%",
+                  width: 16,
+                  height: 16,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {cartItems.length}
               </span>
             )}
           </Link>
 
-          {isMobile && (
-            <button onClick={toggleMenu} style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px'
-            }}>
-              <Menu size={24} />
-            </button>
-          )}
+          {/* Mobile Hamburger */}
+          <button
+            onClick={toggleMenu}
+            style={{
+              display: "none",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+            className="mobile-toggle"
+          >
+            <Menu size={24} />
+          </button>
         </div>
       </div>
 
-      {/* Navigation Bar */}
-      {(menuOpen || !isMobile) && (
-        <nav style={{
-          width: '100%',
-          backgroundColor: 'white',
-          borderTop: '1px solid #e5e7eb',
-          padding: '12px 16px',
-          display: 'flex',
-          justifyContent: 'center'
-        }}>
-          <ul style={{
-            display: isMobile ? 'block' : 'flex',
-            justifyContent: 'center',
-            gap: '32px',
-            listStyleType: 'none',
-            padding: 0,
-            margin: 0
-          }}>
-            {['Home', 'Products', 'Clothes', 'Sports', 'Jewellery'].map((item) => {
-              const url = item === 'Home' ? '/' : item === 'Products' ? '/products' : `/products?category=${item}`
-              return (
-                <li key={item}>
-                  <Link
-                    href={url}
-                    style={{
-                      color: '#374151',
-                      textDecoration: 'none',
-                      fontWeight: 500,
-                      fontSize: '16px',
-                      position: 'relative',
-                      paddingBottom: '4px',
-                      display: 'inline-block'
-                    }}
-                    onMouseEnter={(e) => {
-                      const target = e.currentTarget as HTMLElement
-                      target.style.setProperty('border-bottom', '2px solid black')
-                    }}
-                    onMouseLeave={(e) => {
-                      const target = e.currentTarget as HTMLElement
-                      target.style.setProperty('border-bottom', '2px solid transparent')
-                    }}
-                  >
-                    {item}
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
-      )}
+      {/* Navigation */}
+      <nav
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          padding: "10px 0",
+          gap: "24px",
+          flexWrap: "wrap",
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            color: "#374151",
+            textDecoration: "none",
+            fontWeight: 500,
+            fontSize: "16px",
+            position: "relative",
+            paddingBottom: "4px",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.borderBottom = "2px solid black")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.borderBottom = "2px solid transparent")
+          }
+        >
+          Home
+        </Link>
+
+        {navItems.map((item) => (
+          <button
+            key={item}
+            onClick={() => router.push(`/search?q=${encodeURIComponent(item)}`)}
+            style={{
+              color: "#374151",
+              textDecoration: "none",
+              fontWeight: 500,
+              fontSize: "16px",
+              position: "relative",
+              paddingBottom: "4px",
+              display: "inline-block",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              const target = e.currentTarget as HTMLElement;
+              target.style.setProperty("border-bottom", "2px solid black");
+            }}
+            onMouseLeave={(e) => {
+              const target = e.currentTarget as HTMLElement;
+              target.style.setProperty(
+                "border-bottom",
+                "2px solid transparent"
+              );
+            }}
+          >
+            {item}
+          </button>
+        ))}
+      </nav>
+
+      {/* Mobile Responsive Toggle (override via JS) */}
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-toggle {
+            display: inline-block !important;
+          }
+
+          nav {
+            display: ${menuOpen ? "flex" : "none"} !important;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+          }
+        }
+      `}</style>
     </header>
-  )
+  );
 }
