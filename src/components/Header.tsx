@@ -1,15 +1,20 @@
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
-import { ShoppingCart, Search, Menu } from 'lucide-react'
+import { ShoppingCart, Search, Menu, User } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
 
 export default function Header() {
   const [searchTerm, setSearchTerm] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const router = useRouter()
   const { cartItems } = useCart()
+  const { data: session, status } = useSession()
+  const navItems = ['Products', 'Clothes', 'Sports', 'Jewellery']
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,7 +27,9 @@ export default function Header() {
     setMenuOpen(prev => !prev)
   }
 
-  const navItems = ['Products', 'Clothes', 'Sports', 'Jewellery']
+  const toggleUserMenu = () => {
+    setUserMenuOpen(prev => !prev)
+  }
 
   return (
     <header style={{ width: '100%', borderBottom: '1px solid #e5e7eb', fontFamily: 'sans-serif' }}>
@@ -73,7 +80,9 @@ export default function Header() {
               fontSize: '14px'
             }}
           />
-          <button type="submit" style={{
+          <button type="submit" 
+          suppressHydrationWarning 
+          style={{
             padding: '10px 14px',
             backgroundColor: '#111827',
             color: 'white',
@@ -87,8 +96,98 @@ export default function Header() {
           </button>
         </form>
 
-        {/* Cart and Hamburger */}
+        {/* User Auth, Cart and Hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Profile/Login Button */}
+          {status === 'loading' ? (
+            <div style={{ width: 26, height: 26 }}></div>
+          ) : session ? (
+            <div style={{ position: 'relative' }}>
+              <button 
+              suppressHydrationWarning 
+                onClick={toggleUserMenu}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#111827'
+                }}
+              >
+                <User size={26} />
+                <span style={{ fontSize: '14px', display: 'none' }} className="username-text">
+                  {session.user?.name?.split(' ')[0] || 'Account'}
+                </span>
+              </button>
+              
+              {userMenuOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: '40px',
+                  right: '0',
+                  backgroundColor: 'white',
+                  borderRadius: '6px',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  width: '180px',
+                  zIndex: 50
+                }}>
+                  <button 
+                    onClick={() => {
+                      router.push('/profile');
+                      setUserMenuOpen(false);
+                    }}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      padding: '12px 16px',
+                      textAlign: 'left',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      borderBottom: '1px solid #eee',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    My Profile
+                  </button>
+                  <button 
+                    onClick={() => signOut()}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      padding: '12px 16px',
+                      textAlign: 'left',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      color: '#f44336',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link 
+              href="/login" 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#111827',
+                textDecoration: 'none'
+              }}
+            >
+              <User size={26} />
+              <span style={{ fontSize: '14px', display: 'none' }} className="username-text">
+                Login
+              </span>
+            </Link>
+          )}
+
+          {/* Cart */}
           <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#111827' }}>
             <ShoppingCart size={26} />
             {cartItems.length > 0 && (
@@ -128,14 +227,18 @@ export default function Header() {
       </div>
 
       {/* Navigation */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'center',
-        paddingTop: '16px',
-        paddingBottom: '10px',
-        gap: '36px',
-        flexWrap: 'wrap'
-      }}>
+      <nav
+        className={menuOpen ? 'open' : 'closed'}
+        style={{
+          display: 'flex', // added display flex here
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingTop: '16px',
+          paddingBottom: '10px',
+          gap: '36px',
+          flexWrap: 'wrap'
+        }}
+      >
         <Link
           href="/"
           style={{
@@ -154,6 +257,7 @@ export default function Header() {
 
         {navItems.map(item => (
           <button
+          suppressHydrationWarning 
             key={item}
             onClick={() => router.push(`/search?q=${encodeURIComponent(item)}`)}
             style={{
@@ -166,33 +270,35 @@ export default function Header() {
               border: 'none',
               cursor: 'pointer'
             }}
-            onMouseEnter={(e) => {
-              const target = e.currentTarget as HTMLElement
-              target.style.setProperty('border-bottom', '2px solid black')
-            }}
-            onMouseLeave={(e) => {
-              const target = e.currentTarget as HTMLElement
-              target.style.setProperty('border-bottom', '2px solid transparent')
-            }}
+            onMouseEnter={(e) => e.currentTarget.style.borderBottom = '2px solid black'}
+            onMouseLeave={(e) => e.currentTarget.style.borderBottom = '2px solid transparent'}
           >
             {item}
           </button>
         ))}
       </nav>
 
-      {/* Mobile Responsive Toggle */}
-      <style>{`
+      {/* Mobile Responsive Styles */}
+      <style jsx>{`
+        @media (min-width: 640px) {
+          .username-text {
+            display: inline !important;
+          }
+        }
+        
         @media (max-width: 768px) {
           .mobile-toggle {
             display: inline-block !important;
           }
-
-          nav {
-            display: ${menuOpen ? 'flex' : 'none'} !important;
+          nav.open {
+            display: flex !important;
             flex-direction: column;
             align-items: center;
             gap: 12px;
             padding: 12px 0;
+          }
+          nav.closed {
+            display: none !important;
           }
         }
       `}</style>
