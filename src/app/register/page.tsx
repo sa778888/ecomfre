@@ -29,7 +29,7 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, phone, address, password })
       })
-
+      console.log(response)
       if (response.ok) {
         router.push('/login?success=Account created! Please login.')
       } else {

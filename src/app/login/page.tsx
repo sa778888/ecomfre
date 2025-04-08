@@ -80,6 +80,7 @@ export default function LoginPage() {
                   {label}
                 </label>
                 <input
+                suppressHydrationWarning 
                   id={id}
                   type={type}
                   value={value}
